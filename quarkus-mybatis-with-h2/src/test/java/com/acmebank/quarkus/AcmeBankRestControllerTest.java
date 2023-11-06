@@ -1,0 +1,77 @@
+package com.acmebank.quarkus;
+
+import com.acmebank.quarkus.model.AcmeBank;
+import io.quarkus.test.junit.QuarkusTest;
+import io.restassured.http.ContentType;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
+
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.CoreMatchers.is;
+
+@QuarkusTest
+public class AcmeBankRestControllerTest {
+
+    private AcmeBank createModel(){
+        AcmeBank acmeBank = new AcmeBank();
+        acmeBank.setId(1l);
+        acmeBank.setName("Don joe");
+        acmeBank.setAccountNo("12345");
+        return acmeBank;
+    }
+
+    @Test
+    @Order(1)
+    public void testCreateEndpoint() {
+        given()
+                .contentType(ContentType.JSON)
+                .body(createModel())
+                .when().post("/acmebank/create")
+                .then()
+                .statusCode(200)
+                .body(is("Account created successfully"));
+    }
+
+    @Test
+    @Order(2)
+    public void testUpdateEndpoint() {
+        given()
+                .contentType(ContentType.JSON)
+                .body(createModel())
+                .when().put("/acmebank/update")
+                .then()
+                .statusCode(200)
+                .body(is("Account Updated successfully"));
+    }
+
+    @Test
+    @Order(3)
+    public void testGetAllAccountEndpoint() {
+        given()
+          .when().get("/acmebank/get")
+          .then()
+             .statusCode(200);
+    }
+
+    @Test
+    @Order(4)
+    public void testGetParticularAccountEndpoint() {
+        given()
+                .pathParam("id", 1)
+                .when().get("/acmebank/get/{id}")
+                .then()
+                .statusCode(200);
+    }
+
+    @Test
+    @Order(5)
+    public void testDeleteEndpoint() {
+        given()
+                .pathParam("id", 1)
+                .when().delete("/acmebank/delete/{id}")
+                .then()
+                .statusCode(200)
+                .body(is("Account Deleted successfully"));
+    }
+
+}
